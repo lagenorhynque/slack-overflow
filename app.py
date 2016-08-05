@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import os
 
@@ -45,8 +45,7 @@ def overflow():
     except UnicodeEncodeError:
         return Response(('Only English language is supported. '
                          '%s is not valid input.' % text),
-                         content_type='text/plain; charset=utf-8')
-
+                        content_type='text/plain; charset=utf-8')
 
     resp_qs = ['Stack Overflow Top Questions for "%s"\n' % text]
     resp_qs.extend(map(get_response_string, qs[:MAX_QUESTIONS]))
