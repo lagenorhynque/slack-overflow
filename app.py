@@ -2,17 +2,20 @@
 
 import os
 
-from flask import Flask, request, Response, redirect
-from stackexchange import Site, StackOverflow, Sort, DESC
+from flask import Flask, Response, redirect, request
+from slackweb import Slack
+from stackexchange import DESC, Site, Sort, StackOverflow
 
 try:
     import config
     se_key = config.stackexchange['api_key']
+    post_url = config.slack['post_url']
 except:
     se_key = os.environ.get('SE_KEY')
+    post_url = os.environ.get('POST_URL')
 
 
-if not se_key:
+if not (se_key and post_url):
     import sys
     print 'No config.py file found. Exiting...'
     sys.exit(0)
@@ -23,6 +26,7 @@ MAX_QUESTIONS = 5
 
 app = Flask(__name__)
 so = Site(StackOverflow, se_key)
+slack = Slack(url=post_url)
 
 
 def get_response_string(q):
@@ -34,10 +38,10 @@ def get_response_string(q):
 
 @app.route('/overflow', methods=['post'])
 def overflow():
-    '''
+    """
     Example:
         /overflow python list comprehension
-    '''
+    """
     text = request.values.get('text')
 
     try:
@@ -55,7 +59,9 @@ def overflow():
                         'search directly on '
                         '<https://stackoverflow.com|StackOverflow>.'))
 
-    return Response('\n'.join(resp_qs),
+    slack.notify(text='\n'.join(resp_qs))
+
+    return Response('',
                     content_type='text/plain; charset=utf-8')
 
 

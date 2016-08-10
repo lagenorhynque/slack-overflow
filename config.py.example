@@ -1,3 +1,7 @@
 stackexchange = dict(
-    api_key = ''
+    api_key=''
+)
+
+slack = dict(
+    post_url=''
 )
