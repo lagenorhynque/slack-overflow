@@ -32,8 +32,8 @@ slack = Slack(url=post_url)
 def get_response_string(q):
     q_data = q.json
     check = ' :white_check_mark:' if q.json['is_answered'] else ''
-    return "|%d|%s <%s|%s> (%d answers)" % (q_data['score'], check, q.url,
-                                            q.title, q_data['answer_count'])
+    return "|{0:d}|{1} <{2}|{3}> ({4:d} answers)".format(
+        q_data['score'], check, q.url, q.title, q_data['answer_count'])
 
 
 @app.route('/overflow', methods=['post'])
@@ -43,15 +43,17 @@ def overflow():
         /overflow python list comprehension
     """
     text = request.values.get('text')
+    user = request.values.get('user_name')
 
     try:
         qs = so.search(intitle=text, sort=Sort.Votes, order=DESC)
     except UnicodeEncodeError:
         return Response(('Only English language is supported. '
-                         '%s is not valid input.' % text),
+                         '{0} is not valid input.'.format(text)),
                         content_type='text/plain; charset=utf-8')
 
-    resp_qs = ['Stack Overflow Top Questions for "%s"\n' % text]
+    resp_qs = ['# {0}\nStack Overflow Top Questions for "{1}"\n'.format(
+               user, text)]
     resp_qs.extend(map(get_response_string, qs[:MAX_QUESTIONS]))
 
     if len(resp_qs) is 1:
