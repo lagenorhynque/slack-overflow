@@ -45,6 +45,15 @@ def overflow():
     text = request.values.get('text')
     user = request.values.get('user_name')
 
+    def channel():
+        channel_name = request.values.get('channel_name')
+        if channel_name == 'directmessage':
+            return "@" + request.values.get('user_name')
+        elif channel_name == 'privategroup':
+            return request.values.get('channel_id')
+        else:
+            return "#" + channel_name
+
     try:
         qs = so.search(intitle=text, sort=Sort.Votes, order=DESC)
     except UnicodeEncodeError:
@@ -61,7 +70,7 @@ def overflow():
                         'search directly on '
                         '<https://stackoverflow.com|StackOverflow>.'))
 
-    slack.notify(text='\n'.join(resp_qs))
+    slack.notify(text='\n'.join(resp_qs), channel=channel())
 
     return Response('',
                     content_type='text/plain; charset=utf-8')
