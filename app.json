@@ -8,5 +8,12 @@
         "web",
         "stack overflow"
     ],
-    "repository": "https://github.com/karan/slack-overflow"
+    "env": {
+        "SE_KEY": {
+            "description": "The token for your slash command hook."
+        },
+        "POST_URL": {
+            "description": "The URL to post stuff to slack (an incoming web-hook)."
+        }
+    }
 }
